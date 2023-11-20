@@ -1,39 +1,241 @@
 #include "functions.hpp"
 
-inline double unopt::inverseSquareRoot(double argument)
+namespace no_opt
 {
-    double result = 1/sqrt(argument);
-    return result;
-}
-
-double unopt::someFunction(std::vector<double> arguments, std::vector<double> coefficients, int coefficient_index)
-{
-    int num_terms = arguments.size();
-    double result = 0;
-
-    for (int i=0; i<num_terms; i++)
+    float inverseSquareRoot(float argument)
     {
-        double inverse_square_root = inverseSquareRoot(arguments.at(i));
-        result += coefficients.at(coefficient_index);
+        float result = 1/sqrt(argument);
+        return result;
     }
-    return result;
-}
 
-inline double opt::inverseSquareRoot(double argument)
-{
-    double result = 1/sqrt(argument);
-    return result;
-}
-
-double opt::someFunction(std::vector<double> &arguments, std::vector<double> &coefficients, int coefficient_index)
-{
-    int num_terms = arguments.size();
-    double result = 0;
-
-    for (int i=0; i<num_terms; i++)
+    float someFunction(std::vector<float> arguments, std::vector<float> coefficients, int coefficient_index)
     {
-        double inverse_square_root = inverseSquareRoot(arguments.at(i));
-        result += coefficients.at(coefficient_index);
+        int num_terms = arguments.size();
+        float result = 0;
+
+        for (int i=0; i<num_terms; i++)
+        {
+            float inverse_square_root = inverseSquareRoot(arguments.at(i));
+            result += coefficients.at(coefficient_index);
+        }
+        return result;
     }
-    return result;
+
+    void complicatedFunction()
+    {
+        unsigned int number_of_coefficients = 1e6;
+        unsigned int number_of_arguments = 1e5;
+
+        std::vector<float> arguments(number_of_arguments);
+        std::vector<float> coefficients(number_of_coefficients);
+        std::vector<float> results(number_of_arguments);
+
+        for (int i=0; i<number_of_arguments; i++)
+        {
+            arguments.at(i) = i*i;
+        }
+
+        for (int i=0; i<number_of_coefficients; i++)
+        {
+            coefficients.at(i) = i;
+        }
+
+        auto start_time = std::chrono::high_resolution_clock::now();
+
+    // #pragma omp parallel for
+        for (int i=0; i<number_of_arguments; i++)
+        {
+            results.at(i) = someFunction(arguments, coefficients, i);
+        }
+
+        auto end_time = std::chrono::high_resolution_clock::now();
+        auto time_taken_chrono = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+        double time_taken = time_taken_chrono.count();
+
+        printf("Time taken: %f s \n", time_taken/1e6);
+    }
+}
+
+namespace level_one
+{
+    float inverseSquareRoot(float argument)
+    {
+        float result = 1/sqrt(argument);
+        return result;
+    }
+
+    float someFunction(std::vector<float*> &arguments, std::vector<float*> &coefficients, int coefficient_index)
+    {
+        int num_terms = arguments.size();
+        float result = 0;
+
+        for (int i=0; i<num_terms; i++)
+        {
+            float inverse_square_root = inverseSquareRoot(*arguments.at(i));
+            result += *coefficients.at(coefficient_index);
+        }
+        return result;
+    }
+
+    void complicatedFunction()
+    {
+        unsigned int number_of_coefficients = 1e6;
+        unsigned int number_of_arguments = 1e5;
+
+        std::vector<float*> arguments(number_of_arguments);
+        std::vector<float*> coefficients(number_of_coefficients);
+        std::vector<float*> results(number_of_arguments);
+
+        for (int i=0; i<number_of_arguments; i++)
+        {
+            arguments.at(i) = new float(i*i);
+        }
+
+        for (int i=0; i<number_of_coefficients; i++)
+        {
+            coefficients.at(i) = new float(i);
+        }
+
+        auto start_time = std::chrono::high_resolution_clock::now();
+
+        for (int i=0; i<number_of_arguments; i++)
+        {
+            results.at(i) = new float(someFunction(arguments, coefficients, i));
+        }
+
+        auto end_time = std::chrono::high_resolution_clock::now();
+        auto time_taken_chrono = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+        double time_taken = time_taken_chrono.count();
+
+        printf("Time taken: %f s \n", time_taken/1e6);
+
+        for (int i=0; i<number_of_arguments; i++)
+        {
+            delete arguments.at(i);
+            delete results.at(i);
+        }
+
+        for (int i=0; i<number_of_coefficients; i++)
+        {
+            delete coefficients.at(i);
+        }
+    }
+}
+
+
+namespace level_two
+{
+    inline float inverseSquareRoot(float argument)
+    {
+        float result = 1/sqrt(argument);
+        return result;
+    }
+
+    float someFunction(std::vector<float> &arguments, std::vector<float> &coefficients, int coefficient_index)
+    {
+        int num_terms = arguments.size();
+        float result = 0;
+
+        for (int i=0; i<num_terms; i++)
+        {
+            float inverse_square_root = inverseSquareRoot(arguments.at(i));
+            result += coefficients.at(coefficient_index);
+        }
+        return result;
+    }
+
+    void complicatedFunction()
+    {
+        unsigned int number_of_coefficients = 1e6;
+        unsigned int number_of_arguments = 1e5;
+
+        std::vector<float> arguments(number_of_arguments);
+        std::vector<float> coefficients(number_of_coefficients);
+        std::vector<float> results(number_of_arguments);
+
+        for (int i=0; i<number_of_arguments; i++)
+        {
+            arguments.at(i) = i*i;
+        }
+
+        for (int i=0; i<number_of_coefficients; i++)
+        {
+            coefficients.at(i) = i;
+        }
+
+        auto start_time = std::chrono::high_resolution_clock::now();
+
+        for (int i=0; i<number_of_arguments; i++)
+        {
+            results.at(i) = someFunction(arguments, coefficients, i);
+        }
+
+        auto end_time = std::chrono::high_resolution_clock::now();
+        auto time_taken_chrono = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+        double time_taken = time_taken_chrono.count();
+
+        printf("Time taken: %f s \n", time_taken/1e6);
+    }
+}
+
+
+
+namespace level_three
+{
+    // https://en.wikipedia.org/wiki/Fast_inverse_square_root
+    inline float inverseSquareRoot(float argument)
+    {
+        static_assert(std::numeric_limits<float>::is_iec559); // (enable only on IEEE 754)
+
+        float const y = std::bit_cast<float>(
+            0x5f3759df - (std::bit_cast<std::uint32_t>(argument) >> 1));
+        return y * (1.5f - (argument * 0.5f * y * y));
+    }
+
+    float someFunction(std::vector<float> &arguments, std::vector<float> &coefficients, int coefficient_index)
+    {
+        int num_terms = arguments.size();
+        float result = 0;
+
+        for (int i=0; i<num_terms; i++)
+        {
+            float inverse_square_root = inverseSquareRoot(arguments.at(i));
+            result += coefficients.at(coefficient_index);
+        }
+        return result;
+    }
+
+    void complicatedFunction()
+    {
+        unsigned int number_of_coefficients = 1e6;
+        unsigned int number_of_arguments = 1e5;
+
+        std::vector<float> arguments(number_of_arguments);
+        std::vector<float> coefficients(number_of_coefficients);
+        std::vector<float> results(number_of_arguments);
+
+        for (int i=0; i<number_of_arguments; i++)
+        {
+            arguments.at(i) = i*i;
+        }
+
+        for (int i=0; i<number_of_coefficients; i++)
+        {
+            coefficients.at(i) = i;
+        }
+
+        auto start_time = std::chrono::high_resolution_clock::now();
+
+#pragma omp parallel for
+        for (int i=0; i<number_of_arguments; i++)
+        {
+            results.at(i) = someFunction(arguments, coefficients, i);
+        }
+
+        auto end_time = std::chrono::high_resolution_clock::now();
+        auto time_taken_chrono = std::chrono::duration_cast<std::chrono::microseconds>(end_time - start_time);
+        double time_taken = time_taken_chrono.count();
+
+        printf("Time taken: %f s \n", time_taken/1e6);
+    }
 }

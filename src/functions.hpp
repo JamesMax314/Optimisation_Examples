@@ -2,15 +2,34 @@
 
 #include <vector>
 #include <cmath>
+#include <bit>
+#include <limits>
+#include <cstdint>
 
-namespace unopt
+namespace no_opt
 {
-    double inverseSquareRoot(double argument);
-    double someFunction(std::vector<double> arguments, std::vector<double> coefficients, int coefficient_index);
+    float inverseSquareRoot(float argument);
+    float someFunction(std::vector<float> arguments, std::vector<float> coefficients, int coefficient_index);
+    void complicatedFunction();
+}
+
+namespace level_one
+{
+    float inverseSquareRoot(float argument);
+    float someFunction(std::vector<float> &arguments, std::vector<float> &coefficients, int coefficient_index);
+    void complicatedFunction();
 } // namespace unopt
 
-namespace opt
+namespace level_two
 {
-    double inverseSquareRoot(double argument);
-    double someFunction(std::vector<double> &arguments, std::vector<double> &coefficients, int coefficient_index);
+    float inverseSquareRoot(float argument);
+    float someFunction(std::vector<float> &arguments, std::vector<float> &coefficients, int coefficient_index);
+    void complicatedFunction();
+} // namespace opt
+
+namespace level_three
+{
+    float inverseSquareRoot(float argument);
+    float someFunction(std::vector<float> &arguments, std::vector<float> &coefficients, int coefficient_index);
+    void complicatedFunction();
 } // namespace opt

@@ -12,3 +12,8 @@
 ## Level 3 - Considerable Effort
 - [ ] Parallelisation (OpenMP MPI GP-GPU);
 - [ ] Algorithmic optimisation.
+
+## Compilation
+```bash
+g++ ./src/main.cpp ./src/functions.cpp -o main -I ./src/ -O3 -std=c++20 -fopenmp
+```
