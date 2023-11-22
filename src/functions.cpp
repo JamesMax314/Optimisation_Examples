@@ -8,44 +8,43 @@ namespace no_opt
         return result;
     }
 
-    float someFunction(std::vector<float> arguments, std::vector<float> coefficients, int coefficient_index)
+    float someFunction(std::vector<float*> arguments, std::vector<float*> coefficients, int coefficient_index)
     {
         int num_terms = arguments.size();
         float result = 0;
 
         for (int i=0; i<num_terms; i++)
         {
-            float inverse_square_root = inverseSquareRoot(arguments.at(i));
-            result += coefficients.at(coefficient_index);
+            float inverse_square_root = inverseSquareRoot(*arguments.at(i));
+            result += *coefficients.at(coefficient_index);
         }
         return result;
     }
 
     void complicatedFunction()
     {
-        unsigned int number_of_coefficients = 1e6;
-        unsigned int number_of_arguments = 1e5;
+        unsigned int number_of_coefficients = NUM_COEF;
+        unsigned int number_of_arguments = NUM_ARGS;
 
-        std::vector<float> arguments(number_of_arguments);
-        std::vector<float> coefficients(number_of_coefficients);
-        std::vector<float> results(number_of_arguments);
+        std::vector<float*> arguments(number_of_arguments);
+        std::vector<float*> coefficients(number_of_coefficients);
+        std::vector<float*> results(number_of_arguments);
 
         for (int i=0; i<number_of_arguments; i++)
         {
-            arguments.at(i) = i*i;
+            arguments.at(i) = new float(i*i);
         }
 
         for (int i=0; i<number_of_coefficients; i++)
         {
-            coefficients.at(i) = i;
+            coefficients.at(i) = new float(i);
         }
 
         auto start_time = std::chrono::high_resolution_clock::now();
 
-    // #pragma omp parallel for
         for (int i=0; i<number_of_arguments; i++)
         {
-            results.at(i) = someFunction(arguments, coefficients, i);
+            results.at(i) = new float(someFunction(arguments, coefficients, i));
         }
 
         auto end_time = std::chrono::high_resolution_clock::now();
@@ -53,10 +52,21 @@ namespace no_opt
         double time_taken = time_taken_chrono.count();
 
         printf("Time taken: %f s \n", time_taken/1e6);
+
+        for (int i=0; i<number_of_arguments; i++)
+        {
+            delete arguments.at(i);
+            delete results.at(i);
+        }
+
+        for (int i=0; i<number_of_coefficients; i++)
+        {
+            delete coefficients.at(i);
+        }
     }
 }
 
-namespace level_one
+namespace pass_by_ref
 {
     float inverseSquareRoot(float argument)
     {
@@ -79,8 +89,8 @@ namespace level_one
 
     void complicatedFunction()
     {
-        unsigned int number_of_coefficients = 1e6;
-        unsigned int number_of_arguments = 1e5;
+        unsigned int number_of_coefficients = NUM_COEF;
+        unsigned int number_of_arguments = NUM_ARGS;
 
         std::vector<float*> arguments(number_of_arguments);
         std::vector<float*> coefficients(number_of_coefficients);
@@ -123,7 +133,7 @@ namespace level_one
 }
 
 
-namespace level_two
+namespace contiguous_memory
 {
     inline float inverseSquareRoot(float argument)
     {
@@ -146,8 +156,8 @@ namespace level_two
 
     void complicatedFunction()
     {
-        unsigned int number_of_coefficients = 1e6;
-        unsigned int number_of_arguments = 1e5;
+        unsigned int number_of_coefficients = NUM_COEF;
+        unsigned int number_of_arguments = NUM_ARGS;
 
         std::vector<float> arguments(number_of_arguments);
         std::vector<float> coefficients(number_of_coefficients);
@@ -180,7 +190,7 @@ namespace level_two
 
 
 
-namespace level_three
+namespace magic_square_root
 {
     // https://en.wikipedia.org/wiki/Fast_inverse_square_root
     inline float inverseSquareRoot(float argument)
@@ -207,8 +217,8 @@ namespace level_three
 
     void complicatedFunction()
     {
-        unsigned int number_of_coefficients = 1e6;
-        unsigned int number_of_arguments = 1e5;
+        unsigned int number_of_coefficients = NUM_COEF;
+        unsigned int number_of_arguments = NUM_ARGS;
 
         std::vector<float> arguments(number_of_arguments);
         std::vector<float> coefficients(number_of_coefficients);
@@ -226,7 +236,7 @@ namespace level_three
 
         auto start_time = std::chrono::high_resolution_clock::now();
 
-#pragma omp parallel for
+// #pragma omp parallel for
         for (int i=0; i<number_of_arguments; i++)
         {
             results.at(i) = someFunction(arguments, coefficients, i);

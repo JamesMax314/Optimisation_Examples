@@ -1,17 +1,15 @@
 # Optimisation_Examples
 
-## Level 1 - Easy
-- [ ] Compiler Optimisation (-O2 -O3);
-- [ ] Avoid data copying (Pass by referance);
+## Major Speed Up
+- [ ] Compiler Optimisation (Magic);
+- [ ] Pass by reference;
+- [ ] Parralelism (OpenMP MPI GP-GPU);
+- [ ] Algorithmic optimisation.
 
-## Level 2 - More Effort
+## Other Considerations
 - [ ] Use cach-friendly data structures (contiguous in memory);
 - [ ] Use stack varibles where possible (allocation and deallocation is faster on stack);
 - [ ] Reduce number of function calls (inline small functions);
-
-## Level 3 - Considerable Effort
-- [ ] Parallelisation (OpenMP MPI GP-GPU);
-- [ ] Algorithmic optimisation.
 
 ## Compilation
 ```bash
